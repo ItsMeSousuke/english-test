@@ -2,17 +2,29 @@
 @using english_test.Helpers
 
 <PageTitle>Test</PageTitle>
-<button class="btn btn-primary" @onclick="ShowNewWord">Pokaż kolejne słówko</button>
-<br /><br />
+
+<button class="btn btn-primary" @onclick="ShowNewWord">Zaczynamy!</button>
+<br />
+<br />
 <h5>@currentWord.pl</h5>
 <p>Podaj tłumaczenie:</p>
-<input class="form-control" />
+<input @bind-value="@answer" class="form-control" />
+<div id="force"></div>
+<div id="touches"></div>
+<canvas></canvas>
 <br />
-<button class="btn btn-info" @onclick="Check">Sprawdź</button>
-<br /><br />
+<button class="btn btn-outline-dark" @onclick="Check">Sprawdź</button>
+<br />
+<br />
+
 @if (showTranslation)
 {
-    <p>@currentWord.en</p>
+    <i>@currentWord.en</i>
+
+    <div class="buttons">
+        <button class="btn btn-outline-success" @onclick="ShowNewWord">Dobrze 👍🏻</button>
+        <button class="btn btn-outline-danger" @onclick="ToReview">Źle 😥</button>
+    </div>
 }
 
 
@@ -20,8 +32,11 @@
     (string en, string pl) currentWord = ("", "");
     Dictionary<string, string> words = Words.Words.words;
     Random rng = new Random();
+    string answer = "";
     int[] indexes;
     int[] currentIndexes;
+    List<int> toReviewIndexes = new();
+    int currentIndex;
     bool showTranslation = false;
 
     public void Check()
@@ -31,16 +46,33 @@
 
     public void ShowNewWord()
     {
-        if(currentIndexes.Length == 0)
+        if (currentIndexes.Length == 0)
         {
-            rng.Shuffle(indexes);
-            currentIndexes = indexes;
+            if (toReviewIndexes.Count > 0)
+            {
+                currentIndexes = toReviewIndexes.ToArray();
+                rng.Shuffle(currentIndexes);
+                toReviewIndexes = new();
+            }
+            else
+            {
+                rng.Shuffle(indexes);
+                currentIndexes = indexes;
+            }
         }
-        var current = words.ElementAt(currentIndexes[0]);
+        currentIndex = currentIndexes[0];
+        var current = words.ElementAt(currentIndex);
         currentWord = (current.Key, current.Value);
         currentIndexes = currentIndexes[1..];
         showTranslation = false;
+        answer = "";
     }
+
+    public void ToReview()
+    {
+        toReviewIndexes.Add(currentIndex);
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
