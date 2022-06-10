@@ -1,9 +1,53 @@
 ﻿@page "/"
+@using english_test.Helpers
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Test</PageTitle>
+<button class="btn btn-primary" @onclick="ShowNewWord">Pokaż kolejne słówko</button>
+<br /><br />
+<h5>@currentWord.pl</h5>
+<p>Podaj tłumaczenie:</p>
+<input class="form-control" />
+<br />
+<button class="btn btn-info" @onclick="Check">Sprawdź</button>
+<br /><br />
+@if (showTranslation)
+{
+    <p>@currentWord.en</p>
+}
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+@code {
+    (string en, string pl) currentWord = ("", "");
+    Dictionary<string, string> words = Words.Words.words;
+    Random rng = new Random();
+    int[] indexes;
+    int[] currentIndexes;
+    bool showTranslation = false;
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    public void Check()
+    {
+        showTranslation = true;
+    }
+
+    public void ShowNewWord()
+    {
+        if(currentIndexes.Length == 0)
+        {
+            rng.Shuffle(indexes);
+            currentIndexes = indexes;
+        }
+        var current = words.ElementAt(currentIndexes[0]);
+        currentWord = (current.Key, current.Value);
+        currentIndexes = currentIndexes[1..];
+        showTranslation = false;
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            indexes = Enumerable.Range(0, words.Count() - 1).ToArray();
+            rng.Shuffle(indexes);
+            currentIndexes = indexes;
+        }
+    }
+}
