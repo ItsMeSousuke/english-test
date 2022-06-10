@@ -63,14 +63,17 @@ a, .btn-link {
         content: "An error has occurred."
     }
 
-.buttons { 
+.buttons {
     margin-top: 24px;
     display: flex;
     gap: 16px;
 }
 
-.buttons button {
-    flex: 1;
+    .buttons button {
+        flex: 1;
+    }
+
+.drawing-area {
 }
 
 canvas {
