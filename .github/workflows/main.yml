@@ -17,10 +17,10 @@ jobs:
           dotnet-version: 6.0.300
 
       - name: Publish ExamplesWASM Project
-        run: dotnet publish LatinForLawyers.csproj -c Release -o release --nologo
+        run: dotnet publish english-test/english-test.csproj -c Release -o release --nologo
           
       - name: Change base-tag in index.html
-        run: sed -i 's/<base href="\/" \/>/<base href="\/latintopolish\/" \/>/g' release/wwwroot/index.html
+        run: sed -i 's/<base href="\/" \/>/<base href="\/english-test\/" \/>/g' release/wwwroot/index.html
         
       - name: Add .nojekyll file
         run: touch release/wwwroot/.nojekyll
