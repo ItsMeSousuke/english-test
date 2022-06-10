@@ -1,0 +1,36 @@
+name: Build Page
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-github-page:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup .NET6 SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.300
+
+      - name: Publish project
+        run: dotnet publish english-test/english-test.csproj -c Release -o release --nologo
+          
+      - name: Change base-tag in index.html
+        run: sed -i 's/<base href="\/" \/>/<base href="\/english-test\/" \/>/g' release/wwwroot/index.html
+        
+      - name: Add .nojekyll file
+        run: touch release/wwwroot/.nojekyll
+        
+      - name: Commit wwwroot to GitHub Pages
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v1.5.1
+        with:
+          target_branch: gh-pages
+          build_dir: release/wwwroot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
