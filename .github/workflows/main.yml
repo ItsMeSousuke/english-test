@@ -16,7 +16,7 @@ jobs:
         with:
           dotnet-version: 6.0.300
 
-      - name: Publish ExamplesWASM Project
+      - name: Publish project
         run: dotnet publish english-test/english-test.csproj -c Release -o release --nologo
           
       - name: Change base-tag in index.html
